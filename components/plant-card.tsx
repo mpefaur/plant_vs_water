@@ -23,7 +23,9 @@ export default function PlantCard({ plant }: PlantCardProps) {
       return { text: "No watering recorded yet.", isNegative: false };
     }
 
-    const sortedEvents = [...wateringEvents].sort((a, b) => new Date(b.watered_at) - new Date(a.watered_at));
+    const sortedEvents = [...wateringEvents].sort((a, b) => 
+      new Date(b.watered_at).getTime() - new Date(a.watered_at).getTime()
+    );
     const lastWateredDate = new Date(sortedEvents[0].watered_at);
     const nextWateringDate = new Date(lastWateredDate.getTime() + interval * 24 * 60 * 60 * 1000);
     const now = new Date();
