@@ -24,6 +24,7 @@ import { useAuth } from "@/components/auth-provider";
 import WateringForm from "@/components/watering-form";
 import QRCodeDisplay from "@/components/qr-code-display";
 import WateringHistory from "@/components/watering-history";
+import { getWateringHistory } from "@/lib/plant-service";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -50,15 +51,18 @@ export default function PlantDetailPage({ params }: { params: Promise<{ id: stri
   React.useEffect(() => {
     if (!id) return;
 
-    async function fetchPlant() {
-      try {
-        const fetchedPlant = await getPlantWithWateringInfo(id);
-        setPlant(fetchedPlant);
-      } catch (err) {
-        console.error("Error fetching plant:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
-      }
-    }
+async function fetchPlant() {
+  if (!id) {
+    console.error("ID no puede ser null o undefined");
+    return;
+  }
+  try {
+    const fetchedPlant = await getPlantWithWateringInfo(id);
+    setPlant(fetchedPlant);
+  } catch (err) {
+    console.error("Error fetching plant:", err);
+  }
+}
 
     fetchPlant();
   }, [id]);
@@ -222,9 +226,9 @@ export default function PlantDetailPage({ params }: { params: Promise<{ id: stri
                   <div className="border rounded-lg p-4 bg-muted/50">
                     <h3 className="text-sm font-medium mb-3">Next Watering</h3>
                     <div
-                      className={`text-sm font-semibold ${calculateTimeRemaining(plant.watering_events, plant.watering_interval).isNegative ? 'text-red-500' : 'text-green-500'}`}
+                      className={`text-sm font-semibold ${calculateTimeRemaining(plant.watering_events ?? [], plant.watering_interval).isNegative ? 'text-red-500' : 'text-green-500'}`}
                     >
-                      {calculateTimeRemaining(plant.watering_events, plant.watering_interval).text}
+                      {calculateTimeRemaining(plant.watering_events ?? [], plant.watering_interval).text}
                     </div>
                   </div>
 
@@ -232,7 +236,7 @@ export default function PlantDetailPage({ params }: { params: Promise<{ id: stri
 
                   <div className="pt-2">
                     <Button
-                      variant="primary"
+                      variant="default"
                       onClick={async () => {
                         try {
                           await handleWateringSuccess();
