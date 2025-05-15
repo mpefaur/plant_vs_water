@@ -38,15 +38,15 @@ export async function getPlants(user_id: string) {
   return data;
 }
 
-// Agregar más detalles del error en los logs de depuración para identificar el problema exacto.
-export async function waterPlant(plant_id: string, user_id: string) {
-  console.log("Registrando riego para la planta:", { plant_id, user_id });
+export async function waterPlant(plant_id: string, user_id: string, water_amount: number) {
+  console.log("Registrando riego para la planta:", { plant_id, user_id, water_amount });
 
   const { data, error } = await supabase
     .from("watering_events")
     .insert({
       plant_id,
       user_id,
+      water_amount,
       watered_at: new Date().toISOString(),
     })
     .select()
