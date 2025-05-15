@@ -18,7 +18,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
     return "bg-green-500";
   };
 
-  const calculateTimeRemaining = (wateringEvents, interval) => {
+  const calculateTimeRemaining = (wateringEvents: { watered_at: string }[], interval: number) => {
     if (!wateringEvents || wateringEvents.length === 0) {
       return { text: "No watering recorded yet.", isNegative: false };
     }
