@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export const PUT = async (req: Request, { params }: { params: { id: string } }) => {
+export async function PUT(req: NextRequest) {
   try {
-    const { id } = params;
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop(); // extrae el [id] de la URL
     const body = await req.json();
     const { name, watering_interval } = body;
 
@@ -27,4 +28,4 @@ export const PUT = async (req: Request, { params }: { params: { id: string } }) 
     console.error("Error handling PUT request:", error);
     return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
   }
-};
+}

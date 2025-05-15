@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createPlant } from "@/lib/plant-service";
 import { supabase } from "@/lib/supabase";
+// @ts-ignore
 import jwt from "jsonwebtoken";
 
 export const POST = async (req: Request) => {
@@ -15,13 +16,6 @@ export const POST = async (req: Request) => {
     console.log("User ID from request:", user_id);
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      console.error("Authorization header is missing");
-      return NextResponse.json({ error: "Missing Authorization header" }, { status: 401 });
-    }
-
-    console.log("Authorization header:", authHeader);
-
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       console.error("Authorization header is missing or invalid:", authHeader);
       return NextResponse.json({ error: "Invalid Authorization header" }, { status: 401 });
@@ -34,13 +28,12 @@ export const POST = async (req: Request) => {
     }
 
     const { data: authUser, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !authUser) {
+    if (authError || !authUser?.user) {
       console.error("Error validating token:", authError);
       return NextResponse.json({ error: "User is not authenticated", details: authError?.message }, { status: 401 });
     }
 
-    console.log("Authenticated user object:", authUser);
-    const authenticatedUserId = authUser?.user?.id || authUser?.id;
+    const authenticatedUserId = authUser.user.id;
     console.log("Authenticated user ID:", authenticatedUserId);
 
     if (authenticatedUserId !== user_id) {
@@ -48,7 +41,7 @@ export const POST = async (req: Request) => {
       return NextResponse.json({ error: "User ID does not match authenticated user" }, { status: 403 });
     }
 
-    // Decodificar el token para inspeccionar su contenido
+    // Decodificar el token para debug
     try {
       const decodedToken = jwt.decode(token);
       console.log("Decoded token:", decodedToken);
