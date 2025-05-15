@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
+export type PlantWithWateringInfo = Awaited<ReturnType<typeof getPlantWithWateringInfo>>;
+
 export async function createPlant({ name, image_url, watering_interval, user_id }: { name: string; image_url: string; watering_interval: number; user_id: string }) {
   console.log("Inserting plant with data:", { name, image_url, watering_interval, user_id });
 
