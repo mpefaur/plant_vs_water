@@ -104,17 +104,18 @@ export default function NewPlantPage() {
       console.log("Public URL obtained:", urlData.publicUrl);
 
       // 3. Create plant in the database using the API route
-      let accessToken = user.session?.access_token;
-      if (!accessToken) {
-        console.warn("Access token is missing in context, attempting to retrieve from Supabase...");
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Error retrieving session from Supabase:", error);
-        } else {
-          accessToken = data.session?.access_token;
-          console.log("Access token retrieved from Supabase:", accessToken);
-        }
-      }
+const { data, error } = await supabase.auth.getSession();
+let accessToken = data.session?.access_token;
+
+if (!accessToken) {
+  console.error("No access token available");
+  toast({
+    variant: "destructive",
+    title: "Error",
+    description: "No access token available",
+  });
+  return;
+}
       const response = await fetch("/api/plants", {
         method: "POST",
         headers: {

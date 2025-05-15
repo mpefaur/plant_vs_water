@@ -9,22 +9,37 @@ import Link from "next/link";
 import PlantCard from "@/components/plant-card";
 import { getPlants } from "@/lib/plant-service";
 
+type WateringEvent = {
+  watered_at: string;
+};
+
+type Plant = {
+  id: string;
+  name: string;
+  watering_events: WateringEvent[];
+  lastWatered?: string | null;
+};
+
 export default function PlantsPage() {
   const { user, isLoading } = useAuth();
-  const [plants, setPlants] = useState([]);
+  const [plants, setPlants] = useState<Plant[]>([]);
 
   useEffect(() => {
     if (!isLoading && user) {
-      getPlants(user.id) // Pasar el user_id del usuario autenticado
+      getPlants(user.id)
         .then((fetchedPlants) => {
-          setPlants(fetchedPlants.map((plant) => {
-            const sortedEvents = plant.watering_events.sort((a, b) => new Date(b.watered_at) - new Date(a.watered_at));
-            const lastWatered = sortedEvents[0]?.watered_at || null;
-            return {
-              ...plant,
-              lastWatered,
-            };
-          }));
+          setPlants(
+            fetchedPlants.map((plant: Plant) => {
+              const sortedEvents = plant.watering_events.sort(
+                (a, b) => new Date(b.watered_at).getTime() - new Date(a.watered_at).getTime()
+              );
+              const lastWatered = sortedEvents[0]?.watered_at || null;
+              return {
+                ...plant,
+                lastWatered,
+              };
+            })
+          );
           console.log("Plants fetched in My Plants page:", fetchedPlants);
         })
         .catch((error) => {
