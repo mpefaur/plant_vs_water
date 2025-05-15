@@ -146,7 +146,7 @@ async function fetchPlant() {
     try {
       console.log("Intentando registrar riego con:", { plant_id: id, user_id: userId });
 
-      const response = await waterPlant(id!, userId!); // Registrar el riego en la base de datos
+      const response = await waterPlant(id!, userId!, 1); // Added default water_amount of 1
       if (response) {
         const updatedPlant = await getPlantWithWateringInfo(id!);
         setPlant(updatedPlant);
