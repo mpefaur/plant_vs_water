@@ -29,7 +29,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
     const lastWateredDate = new Date(sortedEvents[0].watered_at);
     const nextWateringDate = new Date(lastWateredDate.getTime() + interval * 24 * 60 * 60 * 1000);
     const now = new Date();
-    const timeDiff = nextWateringDate - now;
+    const timeDiff = nextWateringDate.getTime() - now.getTime();
 
     const isNegative = timeDiff <= 0;
     const absTimeDiff = Math.abs(timeDiff);
@@ -44,7 +44,7 @@ export default function PlantCard({ plant }: PlantCardProps) {
     };
   };
 
-  const timeRemaining = calculateTimeRemaining(plant.watering_events, plant.watering_interval);
+  const timeRemaining = calculateTimeRemaining(plant.watering_events ?? [], plant.watering_interval);
 
   return (
     <Link href={`/plants/${plant.id}`}>
